@@ -1,5 +1,19 @@
 """Разбор параметров командной строки"""
 import argparse
+import re
+
+VERSION_PATTERN = re.compile(r"^\d+\.\d+(\.\d+)?(-[a-zA-Z0-9.]+)?$")
+
+
+def validate_version(value: str) -> str:
+    """Проверяет, что версия соответствует формату или равна 'latest'"""
+    if value == "latest":
+        return value
+    if VERSION_PATTERN.match(value):
+        return value
+    raise argparse.ArgumentTypeError(
+        f"неверный формат версии: '{value}'"
+    )
 
 
 def create_parser():
@@ -26,6 +40,7 @@ def create_parser():
     parser.add_argument(
         "-v", "--version",
         default="latest",
+        type=validate_version,
         help="Версия пакета"
     )
     parser.add_argument(

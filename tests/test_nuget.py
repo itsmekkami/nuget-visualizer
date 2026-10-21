@@ -49,7 +49,7 @@ class TestConfigParser(unittest.TestCase):
 
     def test_missing_required_arg(self):
         """Отсутствие обязательного аргумента вызывает SystemExit"""
-        test_args = ["-m", "local"]  # нет -p
+        test_args = ["-m", "local"]
         with self.assertRaises(SystemExit):
             parse_args(test_args)
 
@@ -58,6 +58,19 @@ class TestConfigParser(unittest.TestCase):
         test_args = ["-p", "Test", "-m", "invalid_mode"]
         with self.assertRaises(SystemExit):
             parse_args(test_args)
+
+    def test_invalid_version_format(self):
+        """Неверный формат версии вызывает SystemExit"""
+        test_args = ["-p", "Test", "-v", "not_a_version"]
+        with self.assertRaises(SystemExit):
+            parse_args(test_args)
+
+    def test_valid_version_formats(self):
+        """Правильные форматы версий принимаются"""
+        for version in ["1.0", "1.2.3", "13.0.3-beta"]:
+            test_args = ["-p", "Test", "-v", version]
+            result = parse_args(test_args)
+            self.assertEqual(result.version, version)
 
 
 if __name__ == "__main__":
